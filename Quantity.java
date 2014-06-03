@@ -234,25 +234,30 @@ public class Quantity
 
     // create arrays of the keys and values
     String[] unitKeyArray = this.unit.keySet().toArray(new String[0]);
-    Integer[] unitValueArray = this.unit.values().toArray(new Integer[0]);
+    Double[] unitValueArray = this.unit.values().toArray(new Double[0]);
 
     for(int i = 0; i < unitValueArray.length; i++)
     {
       // if negative value, set to denominator; else numerator
       // recurses until base case, which is reached in normalizedUnit().
       if(unitValueArray[i] < 0)
-        denominator.add(normalizedUnit(unitKeyArray[i], db));
+      {
+        Quantity normUnit = normalizedUnit(unitKeyArray[i], db);
+        value *= normUnit.value;
+        denominator.add(normUnit.unit.keySet().toArray(new String[0])[0]);
+      }
 
       else
-        numerator.add(normalizedUnit(unitKeyArray[i], db));
+      {
+        Quantity normUnit = normalizedUnit(unitKeyArray[i], db);
+        value /= normUnit.value;
+        numerator.add(normUnit.unit.keySet().toArray(new String[0])[0]);
+      }
     }
 
     return new Quantity(value, numerator, denominator);
-  } // NOTE: I just realized I didnt do anything about
-    // multiplying/dividing the value. It's 6:30am and I'm
-    // tired so I leave that to you. I think the rest of 
-    // the code is ok tho. gogo 
-  
+  } 
+
   public boolean equals(Object toCompare)
   {
     boolean result = false;
