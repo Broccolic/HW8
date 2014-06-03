@@ -4,10 +4,8 @@ import java.text.DecimalFormat;
 /* quantity.java start
  * it's going to be a long tuesday,,
  * 
- * 
  */
 
-//hello there
 public class Quantity
 {
   private double value;
