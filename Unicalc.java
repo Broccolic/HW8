@@ -129,12 +129,16 @@ class Unicalc
     // Q -> R | R Q 
     
     AST r = R();
-
-    return r;  // I don't think I should *always* do this
-               //   (e.g., if I peek and the R is followed
-               //    by a number, word, or left parenthesis,
-               //    I should try to recurively grab at least
-               //    one more R via Q...)
+    String next = toks.peek();
+    if(isAlphabetic(next) || "(".equals(next) || isNumber(next))
+      return new Product(r, Q());
+    
+    else
+      return r;  // I don't think I should *always* do this
+                 //   (e.g., if I peek and the R is followed
+                 //    by a number, word, or left parenthesis,
+                 //    I should try to recurively grab at least
+                 //    one more R via Q...)
 
   }
 

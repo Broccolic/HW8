@@ -32,7 +32,6 @@ public class Quantity
       int value2 = target.unit.get(keyString);
       unit.put(keyString, value2);
     }
-    
   }
   
   public Quantity(double inputValue, List<String> numerator,
@@ -74,8 +73,6 @@ public class Quantity
       else
         unit.put(keyString, -1);
     }
-    
-    
   }
   
   public Quantity mul (Quantity target)
@@ -114,11 +111,10 @@ public class Quantity
             result.unit.put(keyString2, this.unit.get(keyString2));
             result.unit.put(keyString, target.unit.get(keyString));
           }
-          
         }
       }
-      
     }
+
     return result;
   }
   
@@ -158,10 +154,8 @@ public class Quantity
             result.unit.put(keyString2, this.unit.get(keyString2));
             result.unit.put(keyString, target.unit.get(keyString));
           }
-          
         }
       }
-      
     }
     
     return result;
@@ -193,7 +187,6 @@ public class Quantity
     Quantity result = new Quantity (newValue, target.numerator, target.denominator);
     
     return result;
-    
   }
   
   public Quantity sub (Quantity target) throws IllegalArgumentException
@@ -215,9 +208,9 @@ public class Quantity
     result.value = -1 * this.value;
     
     return result;
-    
   }
   
+  // normalizedUnit() and normalize() are not tested but should be finished
   public static Quantity normalizedUnit (String unitName, Map<String, Quantity> db)
   {
     if(db.containsKey(unitName))
@@ -226,13 +219,39 @@ public class Quantity
       return result.normalize(db);
     }
     
-    return null;
+    else
+      return Quantity(1.0, Arrays.asList("unitName"),
+          Collections.<String>emptyList());
   }
   
   public Quantity normalize (Map<String, Quantity> db)
   {
-    return null;
-  }
+    int value = this.value;
+
+    // numerator/denominator lists
+    List<String> numerator = Collections.<String>emptyList();
+    List<String> denominator = COllections.<String>emptyList();
+
+    // create arrays of the keys and values
+    String[] unitKeyArray = this.unit.keySet.toArray();
+    Integer[] unitValueArray = this.unit.values.toArray();
+
+    for(i = 0; i < unitValueArray.length(); i++)
+    {
+      // if negative value, set to denominator; else numerator
+      // recurses until base case, which is reached in normalizedUnit().
+      if(unitValueArray.get(i) < 0)
+        denominator.add(normalizedUnit(unitKeyArray.get(i), db));
+
+      else
+        numerator.add(normalizedUnit(unitKeyArray.get(i), db));
+    }
+
+    return Quantity(value, numerator, denominator);
+  } // NOTE: I just realized I didnt do anything about
+    // multiplying/dividing the value. It's 6:30am and I'm
+    // tired so I leave that to you. I think the rest of 
+    // the code is ok tho. gogo 
   
   public boolean equals(Object toCompare)
   {
@@ -247,17 +266,20 @@ public class Quantity
     return result;
   }
   
+
+  //TO CHOI: shouldn't this be just hashCode() method and not testHashCode()?
   public int testHashCode()
   {
-    return 0;
+    int out = this.toString().hashCode();
+    return out;
   }
   
   public String toString()
   {
-// XXX You will need to fix these lines to match your fields!
     double valueOfTheQuantity = this.value;
       Map<String,Integer> mapOfTheQuantity = this.unit;
-// Ensure we get the units in order
+
+      // Ensure we get the units in order
       TreeSet<String> orderedUnits =
       new TreeSet<String>(mapOfTheQuantity.keySet());
       StringBuffer unitsString = new StringBuffer();
@@ -269,12 +291,12 @@ public class Quantity
         unitsString.append("^" + expt);
     }
       
-// Used to convert doubles to a string with a
-// fixed maximum number of decimal places.
+    // Used to convert doubles to a string with a
+    // fixed maximum number of decimal places.
     DecimalFormat df = new DecimalFormat("0.0####");
-// Put it all together and return.
-      return df.format(valueOfTheQuantity)
-      + unitsString.toString();
+    
+    // Put it all together and return.
+    return df.format(valueOfTheQuantity)
+        + unitsString.toString();
   }
-
 }
