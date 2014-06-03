@@ -220,34 +220,34 @@ public class Quantity
     }
     
     else
-      return Quantity(1.0, Arrays.asList("unitName"),
+      return new Quantity(1.0, Arrays.asList("unitName"),
           Collections.<String>emptyList());
   }
   
   public Quantity normalize (Map<String, Quantity> db)
   {
-    int value = this.value;
+    double value = this.value;
 
     // numerator/denominator lists
     List<String> numerator = Collections.<String>emptyList();
-    List<String> denominator = COllections.<String>emptyList();
+    List<String> denominator = Collections.<String>emptyList();
 
     // create arrays of the keys and values
-    String[] unitKeyArray = this.unit.keySet.toArray();
-    Integer[] unitValueArray = this.unit.values.toArray();
+    String[] unitKeyArray = this.unit.keySet().toArray(new String[0]);
+    Integer[] unitValueArray = this.unit.values().toArray(new Integer[0]);
 
-    for(i = 0; i < unitValueArray.length(); i++)
+    for(int i = 0; i < unitValueArray.length; i++)
     {
       // if negative value, set to denominator; else numerator
       // recurses until base case, which is reached in normalizedUnit().
-      if(unitValueArray.get(i) < 0)
-        denominator.add(normalizedUnit(unitKeyArray.get(i), db));
+      if(unitValueArray[i] < 0)
+        denominator.add(normalizedUnit(unitKeyArray[i], db));
 
       else
-        numerator.add(normalizedUnit(unitKeyArray.get(i), db));
+        numerator.add(normalizedUnit(unitKeyArray[i], db));
     }
 
-    return Quantity(value, numerator, denominator);
+    return new Quantity(value, numerator, denominator);
   } // NOTE: I just realized I didnt do anything about
     // multiplying/dividing the value. It's 6:30am and I'm
     // tired so I leave that to you. I think the rest of 
