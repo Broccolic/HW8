@@ -61,23 +61,43 @@ class Unicalc
   {
     //  S -> def W L | L
 
-    return L();  // I don't think we should *always* do this...
+    String next = toks.peek();
+
+    if("def".equals(next))
+      return new Define(W(), L());
+
+    else
+      return L();  // I don't think we should *always* do this...
   }
 
   public AST L()
   {
     // L -> # E | E
 
-    return E();  // I don't think we should *always* do this...
+    String next = toks.peek();
+
+    if("#".equals(next))
+      return new Normalize(E());
+
+    else
+      return E();  // I don't think we should *always* do this...
   }
 
   public AST E() 
   {
    //   E -> P + E | P - E | P
 
-   AST p = P();
+    AST p = P();
+    String next = toks.peek();
+
+    if("+".equals(next))
+      return new Sum(p, E());
+
+    else if("-".equals(next))
+      return new Difference(p, E());
    
-   return p;  // I don't think we should *always* do this...
+    else
+      return p;  // I don't think we should *always* do this...
   }
   
   public AST P()
@@ -85,14 +105,27 @@ class Unicalc
     //   P -> K * P | K / P | K
     
     AST k = K();
+    String next = toks.peek();
+
+    if("(".equals(next) || "*".equals(next) ||
+        isNumber(next))
+      return new Product(k, P());
     
-    return k;  // I don't think we should *always* do this
+    else if("/".equals(next))
+      return new Quotient(k, P());
+    
+    else
+      return k;  // I don't think we should *always* do this
   }
     
   public AST K()
   {
     // K -> - K | Q 
-    
+    String next = toks.peek();
+
+    if("-".equals(next))
+
+
     return Q();  // I don't think we should *always* do this
   }
 
@@ -147,8 +180,12 @@ class Unicalc
     // R -> V | V ^ J
     
     AST v = V();
-
-    return v;  // I don't think I should *always* do this
+    String next = toks.peek();
+    if("^".equals(next))
+      return new Power(v, J());
+    
+    else
+      return v;  // I don't think I should *always* do this
   }
 
   //  --------------------------------------------------
