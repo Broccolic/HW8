@@ -226,36 +226,21 @@ public class Quantity
   
   public Quantity normalize (Map<String, Quantity> db)
   {
-    double value = this.value;
-
-    // numerator/denominator lists
-    List<String> numerator = Collections.<String>emptyList();
-    List<String> denominator = Collections.<String>emptyList();
-
-    // create arrays of the keys and values
-    String[] unitKeyArray = this.unit.keySet().toArray(new String[0]);
-    Double[] unitValueArray = this.unit.values().toArray(new Double[0]);
-
-    for(int i = 0; i < unitValueArray.length; i++)
+    Quantity result = new Quantity();
+    result.value = this.value;
+    
+    for(String keyString : this.unit.keySet())
     {
-      // if negative value, set to denominator; else numerator
-      // recurses until base case, which is reached in normalizedUnit().
-      if(unitValueArray[i] < 0)
-      {
-        Quantity normUnit = normalizedUnit(unitKeyArray[i], db);
-        value *= normUnit.value;
-        denominator.add(normUnit.unit.keySet().toArray(new String[0])[0]);
-      }
-
-      else
-      {
-        Quantity normUnit = normalizedUnit(unitKeyArray[i], db);
-        value /= normUnit.value;
-        numerator.add(normUnit.unit.keySet().toArray(new String[0])[0]);
-      }
+      Quantity first = Quantity.normalizedUnit(keyString, db);
+      
+      int tothePow = this.unit.get(keyString);
+      
+      Quantity second = first.pow(tothePow);
+      result = result.mul(second);
+      
     }
-
-    return new Quantity(value, numerator, denominator);
+    
+    return result; 
   } 
 
   public boolean equals(Object toCompare)
@@ -273,7 +258,7 @@ public class Quantity
   
 
   //TO CHOI: shouldn't this be just hashCode() method and not testHashCode()?
-  public int testHashCode()
+  public int hashCode()
   {
     int out = this.toString().hashCode();
     return out;
