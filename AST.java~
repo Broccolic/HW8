@@ -45,12 +45,6 @@ class Product implements AST
   
   public Quantity eval(Map<String,Quantity> env)
   {
-    Quantity leftQuantity = new Quantity();
-    Quantity rightQuantity = new Quantity();
-    Quantity result = new Quantity();
-    
-    
-    
     return null; // Seems unlikely
   }  
   

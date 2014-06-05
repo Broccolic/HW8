@@ -1,9 +1,11 @@
 import java.util.*;
 import java.text.DecimalFormat;
 
-/* quantity.java start
- * it's going to be a long tuesday,,
- * 
+/** 
+ * Name : Sunggwan Choi, Daniel Yang 
+ * PID : A99092888 / A11442331
+ * Section : B00 / B00
+ * 2014/5/28
  */
 
 public class Quantity
@@ -13,27 +15,41 @@ public class Quantity
   private List<String> numerator;
   private List<String> denominator;
   
+  /**
+   * 0 argument constructor. Default value is 1.
+   * Unit becomes an empty hashMap, but still exists. 
+   * */
   public Quantity()
   {
     value = 1.0;
-    // reference : http://stackoverflow.com/questions/5468664/how-do-i-set-an-empty-list-of-a-certain-type
+    // reference for Collection.<String> emptyList()
+    // comes from : http://stackoverflow.com/questions/5468664/how-do-i-set-an-empty-list-of-a-certain-type
     unit = new HashMap< String,Integer >();
     numerator = Collections.<String> emptyList();
     denominator = Collections.<String> emptyList();
   }
   
+  /**
+   * Constructor which takes one parameter and makes a deep copy of it. 
+   * @param target a Quantity object to make a deep copy of. 
+   * */
   public Quantity(Quantity target)
   {
     value = target.value;
     unit = new HashMap< String,Integer >();
     
     for(String keyString : target.unit.keySet())
-    {
-      int value2 = target.unit.get(keyString);
-      unit.put(keyString, value2);
-    }
+      unit.put(keyString, target.unit.get(keyString));
   }
   
+  /**
+   * Constructor with 3 parameters for value, numerator unit, and denominator unit. 
+   * for example, if it is 3 m/s (three meter per second), 3 is value, m is numerator unit,
+   * and s will be denominator unit 
+   * @param inputValue the value of the unit. 
+   * @param numerator the numerator unit 
+   * @param denominator the denominator unit. 
+   * */
   public Quantity(double inputValue, List<String> numerator,
                   List<String> denominator) throws IllegalArgumentException
   {
@@ -44,45 +60,49 @@ public class Quantity
     
     this.numerator = numerator;
     this.denominator = denominator;
+    
     unit = new HashMap< String, Integer >();
     
+    // put numerator to the unit hashmap 
     for(int i = 0 ; i < numerator.size() ; i++)
     {
       String keyString = numerator.get(i);
       
+      // if there is already that unit, just +1 to the value of the unit 
       if(unit.containsKey(keyString))
-      {
-        int keyValue = unit.get(keyString) + 1;
-        unit.put(keyString, keyValue);
-      }
-      
+        unit.put(keyString, unit.get(keyString) + 1);
       else
         unit.put(keyString, 1);
     }
     
+    // put denominator to the unit hashmap 
     for(int i = 0 ; i < denominator.size() ; i++)
     {
       String keyString = denominator.get(i);
       
       if(unit.containsKey(keyString))
-      {
-        int keyValue = unit.get(keyString) - 1;
-        unit.put(keyString, keyValue);
-      }
-      
+        unit.put(keyString, unit.get(keyString) - 1);
       else
         unit.put(keyString, -1);
     }
   }
   
+  /**
+   * Method to multiple two Quantity objects. 
+   * 
+   * @param target another Quantity object to be multipled to "this" object. 
+   * @return Quantity the result after the multiplication of "this" and target. 
+   * @throws IllegalArgumentException when the target parameter is null. 
+   * */
   public Quantity mul (Quantity target)
   {
-    if( target == null)
+    if( target == null )
     {  throw new IllegalArgumentException(); }
     
     Quantity result = new Quantity();
     result.value = this.value * target.value;
     
+    // if "this" has empty units, just put everything from target to "this". 
     if(this.unit.isEmpty())
     {
       result.unit.putAll(target.unit);
@@ -97,33 +117,40 @@ public class Quantity
     
     else
     {
-      for(String keyString : target.unit.keySet())
+      for(String targetKeyString : target.unit.keySet())
       {
-        for(String keyString2 : this.unit.keySet())
+        for(String thisKeyString : this.unit.keySet())
         {
-          if(this.unit.containsKey(keyString))
-          {
-            int keyValue = this.unit.get(keyString) + target.unit.get(keyString);
-            result.unit.put(keyString, keyValue);
-          }
+          // if this has the unit, just simply increment it. 
+          if(this.unit.containsKey(targetKeyString))
+            result.unit.put(targetKeyString, this.unit.get(targetKeyString) + target.unit.get(targetKeyString));
+          
+          // if this doesn't have it, add it to this's hashMap. 
           else
           {
-            result.unit.put(keyString2, this.unit.get(keyString2));
-            result.unit.put(keyString, target.unit.get(keyString));
+            result.unit.put(thisKeyString, this.unit.get(thisKeyString));
+            result.unit.put(targetKeyString, target.unit.get(targetKeyString));
           }
         }
       }
     }
-
     return result;
   }
   
+  /**
+   * Method to divide two Quantity objects. 
+   * 
+   * @param target another Quantity object to divid the "this" object.
+   * @return Quantity the result after the division of "this" and target. 
+   * @throws IllegalArgumentException when the target parameter is null. 
+   * */
   public Quantity div (Quantity target)
   {
+    Quantity result = new Quantity();
+    
       if( target == null)
     {  throw new IllegalArgumentException(); }
     
-    Quantity result = new Quantity();
     result.value = this.value / target.value;
     
     if(this.unit.isEmpty())
@@ -140,19 +167,18 @@ public class Quantity
     
     else
     {
-      for(String keyString : target.unit.keySet())
+      for(String targetKeyString : target.unit.keySet())
       {
-        for(String keyString2 : this.unit.keySet())
+        for(String thisKeyString : this.unit.keySet())
         {
-          if(this.unit.containsKey(keyString))
-          {
-            int keyValue = this.unit.get(keyString) - target.unit.get(keyString);
-            result.unit.put(keyString, keyValue);
-          }
+          // if this has the unit, just simply increment it. 
+          if(this.unit.containsKey(targetKeyString))
+            result.unit.put(targetKeyString, this.unit.get(targetKeyString) - target.unit.get(targetKeyString));
+          
           else
           {
-            result.unit.put(keyString2, this.unit.get(keyString2));
-            result.unit.put(keyString, target.unit.get(keyString));
+            result.unit.put(thisKeyString, this.unit.get(thisKeyString));
+            result.unit.put(targetKeyString, target.unit.get(targetKeyString));
           }
         }
       }
@@ -161,46 +187,63 @@ public class Quantity
     return result;
   }
   
+  /**
+   * Method to rise the value of this to the power of the parameter. 
+   * 
+   * @param power the amount of power to be risen of "this"'s value.
+   * @return Quantity the result after to the power is done. 
+   * */
   public Quantity pow (int power)
   {
     Quantity result = new Quantity(this);
-    
-    double resultValue = result.value;
-    result.value = Math.pow(resultValue, power);
+    result.value = Math.pow(result.value, power);
     
     for(String keyString : result.unit.keySet())
-    {
-      int keyValue = result.unit.get(keyString) * power;
-      result.unit.put(keyString, keyValue);
-    }
+      result.unit.put(keyString, result.unit.get(keyString) * power);
     
-    return result;
-    
+    return result;  
   }
   
+  /**
+   * Method to add two Quantity objects. 
+   * 
+   * @param target another Quantity object to add "this" object.
+   * @return Quantity the result after the addition of "this" and target. 
+   * @throws IllegalArgumentException when the target parameter is null. 
+   * */
   public Quantity add (Quantity target) throws IllegalArgumentException
   {
     if(target.unit == null || !target.unit.equals(this.unit))
     { throw new IllegalArgumentException(); }
     
-    double newValue = this.value + target.value;
-    Quantity result = new Quantity (newValue, target.numerator, target.denominator);
+    Quantity result = new Quantity (this.value + target.value, target.numerator, target.denominator);
     
     return result;
   }
   
+  /**
+   * Method to subtract two Quantity objects. 
+   * 
+   * @param target another Quantity object to subtract the "this" object.
+   * @return Quantity the result after the subtraction of "this" and target. 
+   * @throws IllegalArgumentException when the target parameter is null. 
+   * */
   public Quantity sub (Quantity target) throws IllegalArgumentException
   {
     if(target.unit == null || !target.unit.equals(this.unit))
     { throw new IllegalArgumentException(); }
     
-    double newValue = this.value - target.value;
-    Quantity result = new Quantity (newValue, target.numerator, target.denominator);
+    Quantity result = new Quantity (this.value - target.value, target.numerator, target.denominator);
     
     return result;
   }
   
-  // ezpz lol 
+  /**
+   * Method to negate the sign of this quantity object's value. 
+   * 
+   * @return the result quantity after the negation of the value is done. 
+   * @throws IllegalArgumentException when the target parameter is null. 
+   * */
   public Quantity negate()
   {
     Quantity result = new Quantity(this);
@@ -209,59 +252,34 @@ public class Quantity
     
     return result;
   }
-  
-  // normalizedUnit() and normalize() are not tested but should be finished
-  public static Quantity normalizedUnit (String unitName, Map<String, Quantity> db)
-  {
-    if(db.containsKey(unitName))
-    {
-      Quantity result = db.get(unitName);
-      return result.normalize(db);
-    }
-    
-    else
-      return new Quantity(1.0, Arrays.asList(unitName),
-          Collections.<String>emptyList());
-  }
-  
-  public Quantity normalize (Map<String, Quantity> db)
-  {
-    Quantity result = new Quantity();
-    result.value = this.value;
-    
-    for(String keyString : this.unit.keySet())
-    {
-      Quantity first = Quantity.normalizedUnit(keyString, db);
-      
-      int tothePow = this.unit.get(keyString);
-      
-      Quantity second = first.pow(tothePow);
-      result = result.mul(second);
-      
-    }
-    
-    return result; 
-  }
 
+  /**
+   * A method which takes any single object and returns true if and only if 
+   * that object is a Quantity object whose units are exactly the same as 
+   * the calling object. 
+   * 
+   * @param toCompare The Quantity object that will be compared to the calling object "this".
+   * @return true, if both objects are the same. False if they are different. 
+   * */
   public boolean equals(Object toCompare)
   {
-    boolean result = false;
-    
     if(toCompare instanceof Quantity)
     {
       if(this.toString().equals(toCompare.toString()))
-        result = true;
+        return true;
     }
     
-    return result;
+    return false;
   }
   
-
- 
+  /**
+   * A method which will return the hash code of the calling object Quantity. 
+   * 
+   * @return the hashcode of the calling object. 
+   * */
   public int hashCode()
   {
-    int out = this.toString().hashCode();
-    return out;
+    return this.toString().hashCode();
   }
   
   public String toString()
@@ -289,4 +307,52 @@ public class Quantity
     return df.format(valueOfTheQuantity)
         + unitsString.toString();
   }
+  
+  /**
+   * A static method that takes a String and a map and create a normalized
+   * Quantity object equivalent to 1 of the given unit. 
+   * 
+   * @param unitName the name of the unit 
+   * @param db database defined above in the class that this Quantity.java will be used. 
+   * @return A new Quantity object equivalent to 1 of the given unit. 
+   * */
+  public static Quantity normalizedUnit (String unitName, Map<String, Quantity> db)
+  {
+    if(db.containsKey(unitName))
+      return db.get(unitName).normalize(db);
+    
+    else
+      return new Quantity(1.0, Arrays.asList(unitName),
+          Collections.<String>emptyList());
+  }
+  
+  /**
+   * A method which takes in a database in the same format as normalizedUnit and 
+   * returns a copy of this but in normalized form
+   * 
+   * @param db database defined above in the class that this Quantity.java will be used. 
+   * @return A new Quantity object that is in the normalized form. 
+   * */
+  public Quantity normalize (Map<String, Quantity> db)
+  {
+    Quantity result = new Quantity();
+    result.value = this.value;
+    
+    // for all keys in this unit's hashMap... 
+    for(String keyString : this.unit.keySet())
+    {
+      Quantity beforeNormalize = Quantity.normalizedUnit(keyString, db);
+      
+      int tothePow = this.unit.get(keyString);
+      
+      // raise to the power, depends on what the unit was from the "db". 
+      Quantity afterNormalize = beforeNormalize.pow(tothePow);
+      result = result.mul(afterNormalize);
+    }
+    
+    return result; 
+  }
+  
+  
+  
 }
